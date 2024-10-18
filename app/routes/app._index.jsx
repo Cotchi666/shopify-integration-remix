@@ -22,12 +22,13 @@ import db from "../db.server";
 import { format } from "date-fns";
 
 export const loader = async ({ request }) => {
-  console.log('request',request)
+  // console.log("request", request);
   const { session, sessionToken } = await authenticate.admin(request);
   const shops = await db.shop.findMany();
   const token = sessionToken.sub;
   console.log(session.accessToken, "THE USER ID");
   console.log("token", token);
+  console.log("session", session);
   const GET_SHOP_DETAILS = `
   query {
     shop {
@@ -56,7 +57,7 @@ export const loader = async ({ request }) => {
   );
 
   const shopData = await shopDetailsResponse.json();
-
+  // console.log('shopdata',shopData)
   if (!shopData || shopData.errors) {
     return json({
       shopId: "",
@@ -65,10 +66,10 @@ export const loader = async ({ request }) => {
       myshopifyDomain: "",
       primaryDomain: "",
       data: [],
-      session: {},
+      session: session,
     });
   }
-  console.log("data", shopData);
+  console.log("data", shops);
   // Return the shop details
   return json({
     shopId: shopData.data.shop.id,
@@ -76,91 +77,63 @@ export const loader = async ({ request }) => {
     shopEmail: shopData.data.shop.email,
     myshopifyDomain: shopData.data.shop.myshopifyDomain,
     primaryDomain: shopData.data.shop.primaryDomain,
-    data: shops,
+    data:  shops,
     session: session,
   });
 };
 
 export const action = async ({ request }) => {
   const { admin } = await authenticate.admin(request);
+  console.log("admin", admin);
 };
 export default function Index() {
-  // useEffect(() => {
-  //   // Listener to handle messages coming from the Theme App Extension
-  //   window.addEventListener('message', (event) => {
-  //     if (event.origin !== 'https://your-shopify-store-domain.com') {
-  //       return; // Ensure the message is from the trusted Shopify store
-  //     }
-
-  //     if (event.data.type === 'from-theme-extension') {
-  //       console.log('Message from Theme Extension:', event.data.payload);
-  //       // Handle the data received from the Theme App Extension
-  //     }
-  //   });
-
-  //   // Function to send messages to the Theme App Extension
-  //   function sendMessageToThemeExtension(message) {
-  //     window.parent.postMessage(
-  //       { type: 'from-remix-app', payload: message },
-  //       '*'
-  //     );
-  //   }
-
-  //   // Example: Sending a message to the Theme App Extension
-  //   sendMessageToThemeExtension({ message: 'Hello from Remix app' });
-  // }, []);
   const fetcher = useFetcher();
   // const shopify = useAppBridge();
   const { session, data, shopEmail, myshopifyDomain } = useLoaderData();
 
   const generateRegisterUrl = () => {
-    const redirectRoute = "shopify-integration-register";
+    // const redirectRoute = "shopify-integration-register";
     // const redirectUri = `http://localhost:5173/${redirectRoute}`;
-    const redirectUri = `https://normal-trial-employed-philosophy.trycloudflare.com/auth/callback`;
-    // const redirectUri = 'http://127.0.0.1:9292'
-    const SHOP = "test-tomai.myshopify.com";
+    const redirectUri = `https://appointments-reflected-teddy-formerly.trycloudflare.com/auth/callback`;
+    const SHOP = session.shop
     const SCOPE =
       "read_products, write_products, read_orders, write_orders, read_customers, write_customers, read_inventory, write_inventory, read_shipping, write_shipping, read_checkouts, write_checkouts, read_discounts, write_discounts, read_price_rules, write_price_rules, read_fulfillments, write_fulfillments, read_draft_orders, write_draft_orders, read_content, write_content, read_themes, write_themes, read_shopify_payments_payouts, read_script_tags, write_script_tags, read_translations, write_translations, read_files, write_files";
-    const CLIENT_ID = "0ebf890f7112a18398d4268c3385ebfa";
-    const nonce =""
+    const CLIENT_ID = "280818e662c2957ab13e5007b064455e";
+    const nonce = "";
     return `https://${SHOP}/admin/oauth/authorize?client_id=${CLIENT_ID}&scope=${SCOPE}&redirect_uri=${redirectUri}&state=${nonce}`;
   };
-  // const generateRegisterUrl = () => {
-  //   const redirectRoute = "shopify-integration-register";
-  //   const redirectUri = `http://localhost:5173/${redirectRoute}`; + token=session
-  //   return redirectUri
-  // };
 
   let rows = [];
+  console.log('107',data)
   if (data.length > 0) {
-    rows = data.data.map((item) => [
+    rows = data.map((item) => [
+      // eslint-disable-next-line react/jsx-key
       <Text variation="strong">{item.id}</Text>,
-      item.shopId,
-      item.oaId,
-      item.botId,
-      format(new Date(item.createdAt), "PPP"), // Format date to readable form
-      item.isInstalled ? (
-        <Badge status="success">Installed</Badge>
-      ) : (
-        <Badge status="warning">Not Installed</Badge>
-      ),
+        item.shopId,
+        item.oaId,
+        item.botId,
+        format(new Date(item.createdAt), "PPP"), 
+        item.isInstalled ? (
+          <Badge status="success">Installed</Badge>
+        ) : (
+          <Badge status="warning">Not Installed</Badge>
+        ),
+      // eslint-disable-next-line react/jsx-key
       <Button
-        // href={`http://localhost:5173/bot/${item.botId}`}
-        // external
         onClick={() => {
           const url = `http://localhost:5173/bot/${item.botId}`;
-          window.open(url, "_blank"); // Open in a new tab
+          window.open(url, "_blank"); 
         }}
       >
         View Bot
-      </Button>, // Add button linking to the bot page
+      </Button>,
     ]);
   }
   console.log("data", data);
-  console.log("rows", rows);
+  console.log("rows", rows[0]);
   return (
     <>
-      {rows > 0 ? (
+      {rows[0].length > 0 ? (
         <>
           <Page
             fullWidth

@@ -1,9 +1,9 @@
 # Learn more about configuring your app at https://shopify.dev/docs/apps/tools/cli/configuration
 
-client_id = "0ebf890f7112a18398d4268c3385ebfa"
+client_id = "280818e662c2957ab13e5007b064455e"
 name = "Tom AI Chatbots"
 handle = "test-embed"
-application_url = "https://normal-trial-employed-philosophy.trycloudflare.com"
+application_url = "https://appointments-reflected-teddy-formerly.trycloudflare.com"
 embedded = true
 
 [build]
@@ -17,9 +17,9 @@ scopes = "read_checkouts,read_content,read_customers,read_discounts,read_draft_o
 
 [auth]
 redirect_urls = [
-  "https://normal-trial-employed-philosophy.trycloudflare.com/auth/callback",
-  "https://normal-trial-employed-philosophy.trycloudflare.com/auth/shopify/callback",
-  "https://normal-trial-employed-philosophy.trycloudflare.com/api/auth/callback"
+  "https://appointments-reflected-teddy-formerly.trycloudflare.com/auth/callback",
+  "https://appointments-reflected-teddy-formerly.trycloudflare.com/auth/shopify/callback",
+  "https://appointments-reflected-teddy-formerly.trycloudflare.com/api/auth/callback"
 ]
 
 [webhooks]
