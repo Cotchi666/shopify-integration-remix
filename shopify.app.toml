@@ -1,0 +1,41 @@
+# Learn more about configuring your app at https://shopify.dev/docs/apps/tools/cli/configuration
+
+client_id = "0ebf890f7112a18398d4268c3385ebfa"
+name = "Tom AI Chatbots"
+handle = "test-embed"
+application_url = "https://normal-trial-employed-philosophy.trycloudflare.com"
+embedded = true
+
+[build]
+automatically_update_urls_on_dev = true
+dev_store_url = "test-tomai.myshopify.com"
+include_config_on_deploy = true
+
+[access_scopes]
+# Learn more at https://shopify.dev/docs/apps/tools/cli/configuration#access_scopes
+scopes = "read_checkouts,read_content,read_customers,read_discounts,read_draft_orders,read_files,read_fulfillments,read_inventory,read_orders,read_price_rules,read_products,read_script_tags,read_shipping,read_shopify_payments_payouts,read_themes,read_translations,write_checkouts,write_content,write_customers,write_discounts,write_draft_orders,write_files,write_fulfillments,write_inventory,write_orders,write_price_rules,write_products,write_script_tags,write_shipping,write_themes,write_translations"
+
+[auth]
+redirect_urls = [
+  "https://normal-trial-employed-philosophy.trycloudflare.com/auth/callback",
+  "https://normal-trial-employed-philosophy.trycloudflare.com/auth/shopify/callback",
+  "https://normal-trial-employed-philosophy.trycloudflare.com/api/auth/callback"
+]
+
+[webhooks]
+api_version = "2024-07"
+
+  [[webhooks.subscriptions]]
+  uri = "/webhooks/customers/data_request"
+  compliance_topics = [ "customers/data_request" ]
+
+  [[webhooks.subscriptions]]
+  uri = "/webhooks/customers/redact"
+  compliance_topics = [ "customers/redact" ]
+
+  [[webhooks.subscriptions]]
+  topics = [ "app/uninstalled" ]
+  uri = "/webhooks/app/uninstalled"
+
+[pos]
+embedded = false

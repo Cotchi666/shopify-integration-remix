@@ -1,0 +1,43 @@
+
+
+  <script>
+  // Function to load the chatbot script dynamically
+  function loadChatbotConfig() {
+    fetch('https://tame-maps-start.loca.lt/api/v1/integration/shopify/integration/get_config')
+      .then(response => response.json())
+      .then(config => {
+        console.log("config", config.bot_key)
+        if (config && config.bot_key && config.chatbox_src) {
+          // Set the bot configuration
+          window.tomaiConfig = {
+            client_id: config.bot_key,
+          };
+
+          // Create the script element for the chatbox
+          var chatboxScript = document.createElement('script');
+          chatboxScript.id = 'chatbox';
+          chatboxScript.src = config.chatbox_src;
+          chatboxScript.async = true;
+
+          // Append the script to the document head
+          document.head.appendChild(chatboxScript);
+        } else {
+          console.error('Failed to load chatbot configuration');
+        }
+      })
+      .catch(error => {
+        console.error('Error fetching chatbot configuration:', error);
+      });
+  }
+
+  // Load the chatbot configuration when the page is ready
+  document.addEventListener('DOMContentLoaded', loadChatbotConfig);
+</script>
+
+{% schema %}
+{
+"name": "TomAI Chatbots ",
+"target": "section",
+"settings": []
+}
+{% endschema %}
