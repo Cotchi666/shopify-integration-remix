@@ -3,7 +3,7 @@
 client_id = "280818e662c2957ab13e5007b064455e"
 name = "Tom AI Chatbots"
 handle = "test-embed"
-application_url = "https://appointments-reflected-teddy-formerly.trycloudflare.com"
+application_url = "https://instructional-wilderness-browser-functional.trycloudflare.com"
 embedded = true
 
 [build]
@@ -17,9 +17,9 @@ scopes = "read_checkouts,read_content,read_customers,read_discounts,read_draft_o
 
 [auth]
 redirect_urls = [
-  "https://appointments-reflected-teddy-formerly.trycloudflare.com/auth/callback",
-  "https://appointments-reflected-teddy-formerly.trycloudflare.com/auth/shopify/callback",
-  "https://appointments-reflected-teddy-formerly.trycloudflare.com/api/auth/callback"
+  "https://instructional-wilderness-browser-functional.trycloudflare.com/auth/callback",
+  "https://instructional-wilderness-browser-functional.trycloudflare.com/auth/shopify/callback",
+  "https://instructional-wilderness-browser-functional.trycloudflare.com/api/auth/callback"
 ]
 
 [webhooks]
