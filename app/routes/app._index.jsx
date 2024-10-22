@@ -1,11 +1,10 @@
 import { json } from "@remix-run/node";
-import { useFetcher, useLoaderData } from "@remix-run/react";
+import { useLoaderData } from "@remix-run/react";
 import {
   Page,
   Text,
   Button,
   BlockStack,
-  Box,
   InlineStack,
   LegacyCard,
   DataTable,
@@ -17,7 +16,10 @@ import { format } from "date-fns";
 
 export const loader = async ({ request }) => {
   const { session, sessionToken } = await authenticate.admin(request);
-  const shops = await db.shop.findMany();
+  console.log("session", session.shop);
+  // console.log("request",request)
+
+  const bots = await db.bot.findMany();
   const shopDetails = await fetchShopDetails(session);
 
   if (!shopDetails || shopDetails.errors) {
@@ -26,11 +28,7 @@ export const loader = async ({ request }) => {
 
   return json({
     shopId: shopDetails.data.shop.id,
-    shopName: shopDetails.data.shop.name,
-    shopEmail: shopDetails.data.shop.email,
-    myshopifyDomain: shopDetails.data.shop.myshopifyDomain,
-    primaryDomain: shopDetails.data.shop.primaryDomain,
-    data: shops,
+    data: bots,
     session: session,
   });
 };
@@ -38,7 +36,7 @@ export const loader = async ({ request }) => {
 const fetchShopDetails = async (session) => {
   const query = `
     query {
-      shop {
+     shop {
         id
         name
         email
@@ -75,87 +73,76 @@ const emptyShopResponse = (session) => ({
 });
 
 export const action = async ({ request }) => {
-  const { admin } = await authenticate.admin(request);
-  console.log("Admin authenticated:", admin);
+  // const { admin } = await authenticate.admin(request);
+  // console.log("Admin authenticated:", admin);
 };
 
 const generateRegisterUrl = (shop) => {
-  const redirectUri =
-    "https://instructional-wilderness-browser-functional.trycloudflare.com/auth/callback";
-
-  const scope = [
-    "read_products",
-    "write_products",
-    "read_orders",
-    "write_orders",
-    "read_customers",
-    "write_customers",
-    "read_inventory",
-    "write_inventory",
-    "read_shipping",
-    "write_shipping",
-    "read_checkouts",
-    "write_checkouts",
-    "read_discounts",
-    "write_discounts",
-    "read_price_rules",
-    "write_price_rules",
-    "read_fulfillments",
-    "write_fulfillments",
-    "read_draft_orders",
-    "write_draft_orders",
-    "read_content",
-    "write_content",
-    "read_themes",
-    "write_themes",
-    "read_shopify_payments_payouts",
-    "read_script_tags",
-    "write_script_tags",
-    "read_translations",
-    "write_translations",
-    "read_files",
-    "write_files",
-  ].join(", ");
-  const clientId = "280818e662c2957ab13e5007b064455e";
-
+  const redirectUri =process.env.SHOPIFY_REDIRECT_URL;
+  const scope= process.env.SHOPIFY_SCOPES
+  const clientId = process.env.SHOPIFY_API_KEY;
   return `https://${shop}/admin/oauth/authorize?client_id=${clientId}&scope=${scope}&redirect_uri=${redirectUri}`;
 };
 
 const renderRows = (data) =>
   data.map((item) => [
-    // eslint-disable-next-line react/jsx-key
-    <Text variation="strong">{item.id}</Text>,
-    item.shopId,
-    item.oaId,
-    item.botId,
+    <Text key={item.id} variation="strong">
+      {item.id}
+    </Text>,
+    item.botType,
+    item.botToken,
     format(new Date(item.createdAt), "PPP"),
-    item.isInstalled ? (
+    format(new Date(item.updatedAt), "PPP"),
+    item.isActive ? (
       <Badge status="success">Installed</Badge>
     ) : (
       <Badge status="warning">Not Installed</Badge>
     ),
-    // eslint-disable-next-line react/jsx-key
     <Button
-      onClick={() =>
-        window.open(`http://localhost:5173/bot/${item.botId}`, "_blank")
-      }
+      key={`view-${item.botId}`}
+      onClick={() => {
+        let url = process.env.EXTERNAL_FRONT_END_URL;
+        return window.open(`${url}/bot/${item.botId}`, "_blank");
+      }}
     >
       View Bot
     </Button>,
   ]);
 
 export default function Index() {
-  const fetcher = useFetcher();
+  // const fetcher = useFetcher();
   const { session, data } = useLoaderData();
   const rows = data?.length > 0 ? renderRows(data) : [];
 
   return (
     <Page
       fullWidth
-      title={rows.length > 0 ? "TomAI fetched data" : ""}
-      subtitle={rows.length > 0 ? "Overview of all bots and installations" : ""}
+      title={rows.length > 0 ? "TomAI Bots Overview" : "Welcome to TomAI"}
+      subtitle={
+        rows.length > 0
+          ? "Overview of all bots and installations"
+          : "No bots found"
+      }
     >
-      <Button>Create a new bot</Button>
+      <div
+        style={{
+          paddingBottom: "20px",
+        }}
+      >
+        <InlineStack gap="3" spacing="extraTight" align="start">
+          <Button primary>Create a new bot</Button>
+          {rows.length === 0 && (
+            <Button
+              onClick={() =>
+                window.open(generateRegisterUrl(session.shop), "_blank")
+              }
+            >
+              Connect to TomAI
+            </Button>
+          )}
+        </InlineStack>
+      </div>
+
       {rows.length > 0 ? (
         <LegacyCard sectioned>
           <DataTable
@@ -166,14 +153,16 @@ export default function Index() {
               "text",
               "text",
               "text",
+              "text",
             ]}
             headings={[
               "ID",
-              "Shop ID",
-              "OA ID",
-              "Bot ID",
+              "Type",
+              "Bot Key",
               "Created At",
+              "Updated At",
               "Status",
+              "Actions",
             ]}
             rows={rows}
             footerContent={`Total Bots: ${rows.length}`}
@@ -181,7 +170,6 @@ export default function Index() {
         </LegacyCard>
       ) : (
         <EmptyStateContent
-          fetcher={fetcher}
           generateRegisterUrl={() => generateRegisterUrl(session.shop)}
         />
       )}
@@ -307,44 +295,7 @@ function MainContent({ fetcher, generateRegisterUrl }) {
             Learn More
           </Button>
         </InlineStack>
-
-        {fetcher.data?.product && (
-          <ProductDisplay product={fetcher.data.product} />
-        )}
       </BlockStack>
     </div>
-  );
-}
-
-function ProductDisplay({ product }) {
-  return (
-    <>
-      <Text
-        as="h3"
-        variant="headingMd"
-        style={{
-          color: "#007bff",
-          fontSize: "1.4rem",
-          marginTop: "40px",
-          textAlign: "center",
-        }}
-      >
-        Product Created
-      </Text>
-      <Box
-        padding="20px"
-        background="rgba(0, 123, 255, 0.1)"
-        borderRadius="12px"
-        overflowX="scroll"
-        style={{
-          boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
-          marginBottom: "20px",
-        }}
-      >
-        <pre style={{ margin: 0, color: "#333", whiteSpace: "pre-wrap" }}>
-          <code>{JSON.stringify(product, null, 2)}</code>
-        </pre>
-      </Box>
-    </>
   );
 }

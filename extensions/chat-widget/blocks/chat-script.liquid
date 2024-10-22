@@ -1,9 +1,18 @@
 
+  <div id="shop-domain" style="display: none;">{{ shop.domain }}</div>
 
   <script>
   // Function to load the chatbot script dynamically
   function loadChatbotConfig() {
-    fetch('https://tame-maps-start.loca.lt/api/v1/integration/shopify/integration/get_config')
+    const tomaiBackend= 'https://free-poets-shake.loca.lt'
+    const currentShop = document.getElementById("shop-domain")?.innerText;
+    console.log("Loading chatbot config for shop:", currentShop);
+
+    if (!currentShop) {
+      console.error("Shop domain is not available.");
+      return;
+    }
+    fetch(`${tomaiBackend}/api/v1/integration/shopify/integration/get_config?shop=${encodeURIComponent(currentShop)}`)
       .then(response => response.json())
       .then(config => {
         console.log("config", config.bot_key)

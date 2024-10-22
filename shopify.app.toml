@@ -1,14 +1,14 @@
 # Learn more about configuring your app at https://shopify.dev/docs/apps/tools/cli/configuration
 
-client_id = "280818e662c2957ab13e5007b064455e"
+client_id = "b681168ed20823c773da331845032a85"
 name = "Tom AI Chatbots"
-handle = "test-embed"
-application_url = "https://instructional-wilderness-browser-functional.trycloudflare.com"
+handle = "tomai_chatbots"
+application_url = "https://advancement-every-calls-cet.trycloudflare.com"
 embedded = true
 
 [build]
 automatically_update_urls_on_dev = true
-dev_store_url = "test-tomai.myshopify.com"
+dev_store_url = "quickstart-39a51d6c.myshopify.com"
 include_config_on_deploy = true
 
 [access_scopes]
@@ -17,9 +17,9 @@ scopes = "read_checkouts,read_content,read_customers,read_discounts,read_draft_o
 
 [auth]
 redirect_urls = [
-  "https://instructional-wilderness-browser-functional.trycloudflare.com/auth/callback",
-  "https://instructional-wilderness-browser-functional.trycloudflare.com/auth/shopify/callback",
-  "https://instructional-wilderness-browser-functional.trycloudflare.com/api/auth/callback"
+  "https://advancement-every-calls-cet.trycloudflare.com/auth/callback",
+  "https://advancement-every-calls-cet.trycloudflare.com/auth/shopify/callback",
+  "https://advancement-every-calls-cet.trycloudflare.com/api/auth/callback"
 ]
 
 [webhooks]

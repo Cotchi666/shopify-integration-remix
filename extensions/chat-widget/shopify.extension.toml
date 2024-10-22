@@ -1,3 +1,8 @@
+[[extensions]]
 name = "chat-widget"
+handle = "tomai-chatbots-chat-widget"
 type = "theme"
-
+[extensions.capabilities]
+network_access = true
+block_progress = true
+api_access = true

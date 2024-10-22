@@ -1,5 +1,3 @@
-import { authenticate } from "../shopify.server";
-import db from "../db.server";
 import { json } from "@remix-run/node";
 
 export const action = async ({ request }) => {
