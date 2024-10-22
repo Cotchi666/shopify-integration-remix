@@ -19,7 +19,9 @@ export const loader = async ({ request }) => {
   console.log("session", session.shop);
   // console.log("request",request)
 
-  const bots = await db.bot.findMany();
+  const bots = await db.bot.findMany({
+    where:{sessionId:session.id}
+  });
   const shopDetails = await fetchShopDetails(session);
 
   if (!shopDetails || shopDetails.errors) {
@@ -78,9 +80,10 @@ export const action = async ({ request }) => {
 };
 
 const generateRegisterUrl = (shop) => {
-  const redirectUri =process.env.SHOPIFY_REDIRECT_URL;
-  const scope= process.env.SHOPIFY_SCOPES
-  const clientId = process.env.SHOPIFY_API_KEY;
+  const redirectUri =import.meta.env.VITE_SHOPIFY_REDIRECT_URL
+  console.log('84',redirectUri)
+  const scope= import.meta.env.VITE_SHOPIFY_SCOPES
+  const clientId = import.meta.env.VITE_SHOPIFY_API_KEY
   return `https://${shop}/admin/oauth/authorize?client_id=${clientId}&scope=${scope}&redirect_uri=${redirectUri}`;
 };
 
@@ -101,7 +104,7 @@ const renderRows = (data) =>
     <Button
       key={`view-${item.botId}`}
       onClick={() => {
-        let url = process.env.EXTERNAL_FRONT_END_URL;
+        let url = import.meta.env.VITE_EXTERNAL_FRONT_END_URL;
         return window.open(`${url}/bot/${item.botId}`, "_blank");
       }}
     >
@@ -121,7 +124,7 @@ export default function Index() {
       subtitle={
         rows.length > 0
           ? "Overview of all bots and installations"
-          : "No bots found"
+          : ""
       }
     >
       <div
@@ -130,15 +133,8 @@ export default function Index() {
         }}
       >
         <InlineStack gap="3" spacing="extraTight" align="start">
-          <Button primary>Create a new bot</Button>
-          {rows.length === 0 && (
-            <Button
-              onClick={() =>
-                window.open(generateRegisterUrl(session.shop), "_blank")
-              }
-            >
-              Connect to TomAI
-            </Button>
+          {rows.length > 0 && (
+             <Button primary>Create a new bot</Button>
           )}
         </InlineStack>
       </div>
