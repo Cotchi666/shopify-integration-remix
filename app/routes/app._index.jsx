@@ -17,19 +17,25 @@ import { format } from "date-fns";
 export const loader = async ({ request }) => {
   const { session, sessionToken } = await authenticate.admin(request);
   console.log("session", session.shop);
-  // console.log("request",request)
+  console.log("request", session);
 
   const bots = await db.bot.findMany({
-    where:{sessionId:session.id}
+    where: { sessionId: session.id },
   });
   const shopDetails = await fetchShopDetails(session);
-
+  // const activeThemeId = await fetchActiveThemeId(session);
+  // if (activeThemeId) {
+  //   console.log("Active Theme ID:", activeThemeId);
+  // } else {
+  //   console.log("Failed to retrieve the active theme ID");
+  // }
   if (!shopDetails || shopDetails.errors) {
     return json(emptyShopResponse(session));
   }
 
   return json({
     shopId: shopDetails.data.shop.id,
+    // themeId: activeThemeId,
     data: bots,
     session: session,
   });
@@ -63,6 +69,33 @@ const fetchShopDetails = async (session) => {
   );
   return response.json();
 };
+const fetchActiveThemeId = async (session) => {
+  const response = await fetch(
+    `https://${session.shop}/admin/api/2023-10/themes.json`,
+    {
+      method: "GET",
+      headers: {
+        "X-Shopify-Access-Token": session.accessToken,
+        "Content-Type": "application/json",
+      },
+    },
+  );
+  if (!response.ok) {
+    console.error("Failed to fetch themes:", response.statusText);
+    return null;
+  }
+  const { themes } = await response.json();
+
+  // Find the active theme (main theme)
+  const activeTheme = themes.find((theme) => theme.role === "main");
+  if (!activeTheme) {
+    console.log("No active theme found");
+    return null;
+  }
+
+  console.log("Active theme ID:", activeTheme.id);
+  return activeTheme.id;
+};
 
 const emptyShopResponse = (session) => ({
   shopId: "",
@@ -80,10 +113,12 @@ export const action = async ({ request }) => {
 };
 
 const generateRegisterUrl = (shop) => {
-  const redirectUri =import.meta.env.VITE_SHOPIFY_REDIRECT_URL
-  console.log('84',redirectUri)
-  const scope= import.meta.env.VITE_SHOPIFY_SCOPES
-  const clientId = import.meta.env.VITE_SHOPIFY_API_KEY
+  const redirectUri = import.meta.env.VITE_SHOPIFY_REDIRECT_URL
+  // const redirectUri =
+  //   "https://called-gathering-adapted-personality.trycloudflare.com/auth/callback";
+  const scope = import.meta.env.VITE_SHOPIFY_SCOPES;
+  const clientId = import.meta.env.VITE_SHOPIFY_API_KEY;
+  console.log(redirectUri, clientId, scope);
   return `https://${shop}/admin/oauth/authorize?client_id=${clientId}&scope=${scope}&redirect_uri=${redirectUri}`;
 };
 
@@ -121,11 +156,7 @@ export default function Index() {
     <Page
       fullWidth
       title={rows.length > 0 ? "TomAI Bots Overview" : "Welcome to TomAI"}
-      subtitle={
-        rows.length > 0
-          ? "Overview of all bots and installations"
-          : ""
-      }
+      subtitle={rows.length > 0 ? "Overview of all bots and installations" : ""}
     >
       <div
         style={{
@@ -133,9 +164,7 @@ export default function Index() {
         }}
       >
         <InlineStack gap="3" spacing="extraTight" align="start">
-          {rows.length > 0 && (
-             <Button primary>Create a new bot</Button>
-          )}
+          {rows.length > 0 && <Button primary>Create a new bot</Button>}
         </InlineStack>
       </div>
 

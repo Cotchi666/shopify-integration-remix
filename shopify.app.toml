@@ -3,7 +3,7 @@
 client_id = "b681168ed20823c773da331845032a85"
 name = "Tom AI Chatbots"
 handle = "tomai_chatbots"
-application_url = "https://advancement-every-calls-cet.trycloudflare.com"
+application_url = "https://called-gathering-adapted-personality.trycloudflare.com"
 embedded = true
 
 [build]
@@ -17,9 +17,9 @@ scopes = "read_checkouts,read_content,read_customers,read_discounts,read_draft_o
 
 [auth]
 redirect_urls = [
-  "https://advancement-every-calls-cet.trycloudflare.com/auth/callback",
-  "https://advancement-every-calls-cet.trycloudflare.com/auth/shopify/callback",
-  "https://advancement-every-calls-cet.trycloudflare.com/api/auth/callback"
+  "https://called-gathering-adapted-personality.trycloudflare.com/auth/callback",
+  "https://called-gathering-adapted-personality.trycloudflare.com/auth/shopify/callback",
+  "https://called-gathering-adapted-personality.trycloudflare.com/api/auth/callback"
 ]
 
 [webhooks]

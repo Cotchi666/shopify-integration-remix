@@ -4,15 +4,17 @@
   <script>
   // Function to load the chatbot script dynamically
   function loadChatbotConfig() {
-    const tomaiBackend= 'https://free-poets-shake.loca.lt'
+    const tomaiBackend= 'https://slick-lizards-beg.loca.lt'
     const currentShop = document.getElementById("shop-domain")?.innerText;
     console.log("Loading chatbot config for shop:", currentShop);
+    // console.log("ENV SHOPIFY REMIX:", process.env.VITE_EXTERNAL_BACK_END_URL);
 
+    
     if (!currentShop) {
       console.error("Shop domain is not available.");
       return;
     }
-    fetch(`${tomaiBackend}/api/v1/integration/shopify/integration/get_config?shop=${encodeURIComponent(currentShop)}`)
+    fetch(`${tomaiBackend}/api/v1/integration/shopify/integration/get-config?shop=${encodeURIComponent(currentShop)}`)
       .then(response => response.json())
       .then(config => {
         console.log("config", config.bot_key)
@@ -45,7 +47,7 @@
 
 {% schema %}
 {
-"name": "TomAI Chatbots ",
+"name": "TomAI Chatbots",
 "target": "section",
 "settings": []
 }
